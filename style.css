@@ -1,0 +1,196 @@
+* {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+}
+
+body {
+   height: 100%;
+   background-color: #111;
+   box-sizing: border-box;
+}
+
+#wrapper {
+   max-width: 1180px;
+   margin: 0 auto;
+   padding: 10px;
+}
+
+h1 {
+   color: #fff;
+   text-transform: uppercase;
+   font-weight: 800;
+   font-size: 3rem;
+   text-align: center;
+   margin: 1rem 0 3rem;
+	font-family: sans-serif;
+	animation: glow 8s ease-in-out infinite alternate;
+}
+
+@-webkit-keyframes glow {
+	from {
+		text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #008000,
+			0 0 4px #008000, 0 0 6px #008000, 0 0 8px #008000,
+			0 0 10px #008000;
+	}
+
+	to {
+		text-shadow: 0 0 20px #fff, 0 0 30p #000, 0 0 40px #000,
+			0 0 50px #000, 0 0 60px #000, 0 0 70px #000,
+			0 0 80px #000;
+	}
+}
+
+h2 {
+   color: #fff;
+   font-size: 3rem;
+   font-style: italic;
+   font-weight: 300;
+   text-align: center;
+   margin: 1rem 0 3rem;
+}
+
+.inputDiv {
+   display: flex;
+   max-width: 100%;
+   justify-content: center;
+   align-items: center;
+}
+
+.input {
+   padding: 0.5rem 1rem;
+   outline: none;
+   border: none;
+   height: 50px;
+   border-radius: 25px;
+   margin: 0.25rem;
+   transition: 0.5s;
+   font-size: 1.4rem;
+}
+
+.add {
+   outline: none;
+   border: none;
+   height: 50px;
+   width: 100px;
+   font-weight: bold;
+   font-size: 1.4rem;
+   border-radius: 25px;
+   background-color: #fff;
+   cursor: pointer;
+   transition: 0.5s;
+   margin: 0.25rem;
+}
+
+.add:hover,
+.doing:hover,
+.done:hover,
+.remove:hover {
+   opacity: 0.7;
+}
+
+.task {
+   padding: 0.5rem;
+   border-bottom: 4px solid #fff;
+   margin-bottom: 1.5rem;
+}
+
+.container-1 > .task {
+   border-left: 4px solid #e00;
+}
+
+.container-2 > .task {
+   border-left: 4px solid #00f;
+}
+
+.container-3 > .task {
+   border-left: 4px solid #008000;
+}
+
+.task-input {
+   background: none;
+   outline: none;
+   border: none;
+   color: #fff;
+   font-size: 1.4rem;
+   text-transform: uppercase;
+   width: 100%;
+}
+
+.doing,
+.done,
+.remove {
+   background: none;
+   outline: none;
+   border: none;
+   font-size: 0.8rem;
+   margin: 5px 15px 5px 0px;
+   cursor: pointer;
+}
+
+.doing {
+   color: #ff0;
+}
+
+.done {
+   color: #008000;
+}
+
+.remove {
+   color: #e00;
+}
+
+[class*='column-'] {
+   width: 100%;
+   float: left;
+   padding: 15px;
+   margin-top: 30px;
+}
+
+/* For tablet and desktop */
+@media only screen and (min-width: 901px) {
+   .column-desktop {
+      width: 33.33%;
+   }
+}
+
+/* For tablet and desktop */
+@media only screen and (min-width: 600px) and (max-width: 900px) {
+   .input {
+      font-size: 1.3rem;
+   }
+   .add {
+      font-size: 1.3rem;
+   }
+}
+
+/* For phones */
+@media only screen and (max-width: 599px) {
+   .input {
+      max-width: 80%;
+      font-size: 1rem;
+   }
+
+   .add {
+      font-size: 1rem;
+	}
+
+   h1 {
+         animation: glow 8s ease-in-out infinite alternate;
+      }
+
+      @-webkit-keyframes glow {
+         from {
+            text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #008000,
+					0 0 4px #008000, 0 0 6px #008000, 0 0 8px #008000,
+               0 0 10px #008000;
+         }
+
+         to {
+            text-shadow: 0 0 20px #fff, 0 0 30p #000, 0 0 40px #000,
+               0 0 50px #000, 0 0 60px #000, 0 0 70px #000,
+               0 0 80px #000;
+         }
+      }
+   
+}
