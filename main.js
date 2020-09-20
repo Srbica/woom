@@ -3,76 +3,20 @@ const container2 = document.querySelector('.container-2');
 const container3 = document.querySelector('.container-3');
 let inputValue = document.querySelector('.input');
 const add = document.querySelector('.add');
-// if(window.localStorage.getItem("todos") == undefined){
-//      let todos = [];
-//      window.localStorage.setItem("todos", JSON.stringify(todos));
-// }
-// let todosEX = window.localStorage.getItem("todos");
-// let todos = JSON.parse(todosEX);
+const url = "https://kanban-api-rails.herokuapp.com/todos";
+const todoState = 1;
+const progressState = 2;
+const doneState = 3;
 let todos = [];
+
 class task {
 	constructor(object) {
-		this.createTask(object.content);
+		// this.createTask(object.content);
         this.id = object.id;
         this.content = object.content;
         this.state = object.state;
         this.createAt = object.created_at;
         this.updatedAt = object.updated_at;
-    }
-    
-    createTask(name){
-    	let taskBox = document.createElement('div');
-        taskBox.classList.add('task');
-    	let input = document.createElement('input');
-    	input.type = "text";
-        input.value = name;
-    	input.classList.add('task-input');
-        
-        let doing = document.createElement('button');
-        doing.classList.add('doing');
-        doing.innerHTML = "DOING";
-        doing.state = 2;
-    	doing.addEventListener('click', () => this.doing(taskBox, name));
-        
-        let done = document.createElement('button');
-        done.classList.add('done');
-        done.innerHTML = "DONE";
-        done.state = 3;
-        done.addEventListener('click', () => this.done(taskBox, name));
-        
-        let remove = document.createElement('button');
-    	remove.classList.add('remove');
-    	remove.innerHTML = "REMOVE";
-    	remove.addEventListener('click', () => this.remove(taskBox, name));
-        
-        container1.appendChild(taskBox);
-        taskBox.appendChild(input);
-        taskBox.appendChild(doing);
-        taskBox.appendChild(done);
-        taskBox.appendChild(remove);
-    }
-    
-    doing(taskBox, name){
-        taskBox.parentNode.removeChild(taskBox);
-        let index = todos.indexOf(name);
-        todos.splice(index, 1);
-        container2.appendChild(taskBox);
-        // window.localStorage.setItem("todos", JSON.stringify(todos));
-    }
-    
-    done(taskBox, name){
-        taskBox.parentNode.removeChild(taskBox);
-        let index = todos.indexOf(name);
-        todos.splice(index, 1);
-        container3.appendChild(taskBox);
-        // window.localStorage.setItem("todos", JSON.stringify(todos));
-    }
-    
-    remove(taskBox, name){
-        taskBox.parentNode.removeChild(taskBox);
-        let index = todos.indexOf(name);
-        todos.splice(index, 1);
-        // window.localStorage.setItem("todos", JSON.stringify(todos));
     }
 }
 
@@ -83,52 +27,181 @@ window.addEventListener('keydown', (e) => {
 	}
 })
 
-function addNewTask()
-{
-    let newTaskResponse = httpPost("https://kanban-api-rails.herokuapp.com/todos", inputValue.value, 1);
+function addNewTask(){
+    var newTaskResponse = httpPost(inputValue.value, todoState);
     todos.unshift(newTaskResponse);
-    renderTodos();
+    renderTasks();
     inputValue.value = "";
 }
 
-
-function renderTodos() 
-{
-    let headline = document.querySelector('.container-1 h2');
-    // remove all children
-
-    while (container1.firstChild) {
-        container1.removeChild(container1.firstChild);
-    }
-    container1.appendChild(headline);
-
+function renderTasks() {
+    emptyDomFromTasks();
     todos.forEach(element => {
-        let newTask = new task(element);
+        if (element.state == todoState) {
+            renderTodo(element);
+        }
+        else if (element.state == progressState) {
+            renderInProgress(element);
+        }
+        else if (element.state == doneState) {
+            renderDone(element);
+        }
     });
 }
 
-(function() 
-{
-    let response = httpGet("https://kanban-api-rails.herokuapp.com/todos");
+function renderTodo(task) {
+        let taskBox = document.createElement('div');
+        taskBox.classList.add('task');
+        
+        let input = document.createElement('input');
+        input.type = "text";
+        // input.disabled = true;
+        input.value = task.content;
+        input.classList.add('task-input');
+        
+        let doing = document.createElement('button');
+        doing.classList.add('doing');
+        doing.innerHTML = "DOING";
+        doing.addEventListener('click', () => this.moveTask(task, progressState));
+        
+        let done = document.createElement('button');
+        done.classList.add('done');
+        done.innerHTML = "DONE";
+        done.addEventListener('click', () => this.moveTask(task, doneState));
+        
+        let remove = document.createElement('button');
+        remove.classList.add('remove');
+        remove.innerHTML = "REMOVE";
+        remove.addEventListener('click', () => this.deleteTask(task.id));
+        
+        container1.appendChild(taskBox);
+        taskBox.appendChild(input);
+        taskBox.appendChild(doing);
+        taskBox.appendChild(done);
+        taskBox.appendChild(remove);
+}
+
+function renderInProgress(task) {
+        let taskBox = document.createElement('div');
+        taskBox.classList.add('task');
+        
+        let input = document.createElement('input');
+        input.type = "text";
+        input.value = task.content;
+        input.classList.add('task-input');
+        
+        let doing = document.createElement('button');
+        doing.classList.add('doing');
+        doing.innerHTML = "TODO";
+        doing.addEventListener('click', () => this.moveTask(task, todoState));
+        
+        let done = document.createElement('button');
+        done.classList.add('done');
+        done.innerHTML = "DONE";
+        done.addEventListener('click', () => this.moveTask(task, doneState));
+        
+        let remove = document.createElement('button');
+        remove.classList.add('remove');
+        remove.innerHTML = "REMOVE";
+        remove.addEventListener('click', () => this.deleteTask(task.id));
+        
+        container2.appendChild(taskBox);
+        taskBox.appendChild(input);
+        taskBox.appendChild(doing);
+        taskBox.appendChild(done);
+        taskBox.appendChild(remove);
+}
+
+function renderDone(task) {
+        let taskBox = document.createElement('div');
+        taskBox.classList.add('task');
+        
+        let input = document.createElement('input');
+        input.type = "text";
+        input.value = task.content;
+        input.classList.add('task-input');
+        
+        let todo = document.createElement('button');
+        todo.classList.add('doing');
+        todo.innerHTML = "TODO";
+        todo.addEventListener('click', () => this.moveTask(task, todoState));
+        
+        let doing = document.createElement('button');
+        doing.classList.add('done');
+        doing.innerHTML = "DOING";
+        doing.addEventListener('click', () => this.moveTask(task, progressState));
+        
+        let remove = document.createElement('button');
+        remove.classList.add('remove');
+        remove.innerHTML = "REMOVE";
+        remove.addEventListener('click', () => this.deleteTask(task.id));
+        
+        container3.appendChild(taskBox);
+        taskBox.appendChild(input);
+        taskBox.appendChild(todo);
+        taskBox.appendChild(doing);
+        taskBox.appendChild(remove);
+}
+
+function emptyDomFromTasks(){
+    let headline1 = document.querySelector('.container-1 h2');
+    // remove all children
+    while (container1.firstChild) {
+        container1.removeChild(container1.firstChild);
+    } 
+    container1.appendChild(headline1);
+    
+    let headline2 = document.querySelector('.container-2 h2');
+    while (container2.firstChild) {
+        container2.removeChild(container2.firstChild);
+    }
+    container2.appendChild(headline2);
+    
+    let headline3 = document.querySelector('.container-3 h2');
+    while (container3.firstChild) {
+        container3.removeChild(container3.firstChild);
+    }
+    container3.appendChild(headline3);
+}
+
+function deleteTask(id) {
+    httpDelete(id);
+    todos = todos.filter(function(e) { return e.id !== id });
+    renderTasks();
+}
+
+function moveTask(task, newState) {
+    httpPut(task.id, task.content, newState)
+    getTasks();
+    renderTasks();
+}
+
+function getTasks() {
+    todos = [];
+    var response = httpGet();
     response.forEach(element => {
-        let newTask = new task(element);
+        var newTask = new task(element);
         todos.push(newTask);
     });
-    renderTodos();
+}
+
+(function() {
+    getTasks();
+    renderTasks();
 })();
 
-function httpGet(theUrl)
+function httpGet()
 {
-    let xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", url, false ); // false for synchronous request
     xmlHttp.send( null );
     return JSON.parse(xmlHttp.responseText);
 }
 
-function httpPost(theUrl, name, state)
+function httpPost(name, state)
 {
-    let xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("POST", theUrl, false);
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("POST", url, false);
     xmlHttp.setRequestHeader('Content-Type', 'application/json');
     xmlHttp.send(JSON.stringify({
         "todo": {
@@ -137,4 +210,22 @@ function httpPost(theUrl, name, state)
         }
     }));
     return JSON.parse(xmlHttp.responseText);
+}
+
+function httpDelete(taskId) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("DELETE", url + "/" + taskId, false);
+    xmlHttp.send();
+}
+
+function httpPut(taskId, taskName, taskState) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("PUT", url + "/" + taskId, false);
+    xmlHttp.setRequestHeader('Content-Type', 'application/json');
+    xmlHttp.send(JSON.stringify({
+        "todo": {
+            "state": taskState,
+            "content": taskName
+        }
+    }));
 }
